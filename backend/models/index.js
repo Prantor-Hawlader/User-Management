@@ -2,7 +2,10 @@ const { Sequelize, DataTypes } = require('sequelize');
 const dotenv = require("dotenv");
 dotenv.config();
 
-const sequelize = new Sequelize(process.env.DATABASE_URI)
+const sequelize = new Sequelize(process.env.DATABASE_URI, {
+    dialect: 'mysql',
+    dialectModule: require('mysql2')
+})
 
 
 const dbConnection = async () => {
