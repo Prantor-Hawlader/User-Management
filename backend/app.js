@@ -6,14 +6,18 @@ const usersRouter = require('./routes/users');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: ["https://user-management-server-gules.vercel.app"],
+    methods: ["GET", "POST", "PUT"],
+    credentials: true
+}));
 app.use(express.json());
 
 app.use('/auth', authRouter);
 app.use('/users', usersRouter);
 
 app.get("/", (req, res) => {
-    res.json({ message: "hello world" })
+    return res.json({ message: "hello world" })
 })
 
 const PORT = process.env.PORT || 5000;
