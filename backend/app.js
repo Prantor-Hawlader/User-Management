@@ -6,7 +6,10 @@ const dotenv = require('dotenv');
 
 const app = express();
 dotenv.config()
-app.use(cors());
+app.use(cors({
+    origin: ["https://prantor-user-management.vercel.app"],
+
+}));
 app.use(express.json());
 
 app.use('/auth', authRouter);
