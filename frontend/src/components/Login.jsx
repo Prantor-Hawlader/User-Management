@@ -19,6 +19,7 @@ export default function Login() {
       navigate("/");
     } catch (error) {
       console.log("logout bertho");
+      setError("Login Failed");
     }
   }
 

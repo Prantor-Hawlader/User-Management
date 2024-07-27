@@ -1,8 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const dotenv = require("dotenv");
-const path = require("path");
-
-dotenv.config({ path: path.join(process.cwd(), ".env") });
+dotenv.config();
 
 const sequelize = new Sequelize(process.env.DATABASE_URI)
 

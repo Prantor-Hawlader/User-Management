@@ -3,7 +3,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 const { authenticateToken } = require('../middleware/token');
-
+const dotenv = require("dotenv")
+dotenv.config()
 
 const router = express.Router();
 
@@ -20,7 +21,7 @@ router.post('/login', async (req, res) => {
     if (!user) return res.status(404).json({ error: 'User not found' });
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
-    const token = jwt.sign({ id: user.id }, 'your_jwt_secret');
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
     await User.update({ lastLogin: new Date() }, { where: { id: user.id } });
     res.json({ token });
 });
