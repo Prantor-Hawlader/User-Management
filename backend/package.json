@@ -5,8 +5,7 @@
   "main": "app.js",
   "scripts": {
     "server": "node app.js",
-    "build" : "npm install"
-  
+    "build": "npm install"
   },
   "keywords": [],
   "author": "",
