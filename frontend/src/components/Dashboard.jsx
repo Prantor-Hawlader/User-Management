@@ -48,13 +48,7 @@ export default function Dashboard() {
           headers: { Authorization: localStorage.getItem("token") },
         }
       );
-      setUsers(
-        users.map((user) =>
-          selectedUsers.includes(user.id)
-            ? { ...user, status: "blocked" }
-            : user
-        )
-      );
+      window.location.reload();
     } catch (error) {
       console.log("Failed to block users:", error);
     }
@@ -72,11 +66,7 @@ export default function Dashboard() {
           headers: { Authorization: localStorage.getItem("token") },
         }
       );
-      setUsers(
-        users.map((user) =>
-          selectedUsers.includes(user.id) ? { ...user, status: "active" } : user
-        )
-      );
+      window.location.reload();
     } catch (error) {
       console.log("Failed to unblock users:", error);
     }
@@ -91,8 +81,7 @@ export default function Dashboard() {
         data: { ids: selectedUsers },
         headers: { Authorization: localStorage.getItem("token") },
       });
-
-      setUsers(users.filter((user) => !user.selected));
+      window.location.reload();
     } catch (error) {
       console.log("Failed to delete users:", error);
     }
