@@ -6,13 +6,12 @@ const dotenv = require('dotenv');
 
 const app = express();
 dotenv.config()
-// app.use(cors({
-//     origin: ["https://prantor-user-management.vercel.app"],
-//     methods: ["GET", "POST", "DELETE", "PUT"],
-//     credentials: true
+app.use(cors({
+    origin: ["https://prantor-user-management.vercel.app"],
+    methods: ["GET", "POST", "DELETE", "PUT"],
+    credentials: true
 
-// }));
-app.use(cors())
+}));
 
 app.use(express.json());
 
