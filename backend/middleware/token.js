@@ -8,7 +8,7 @@ const authenticateToken = async (req, res, next) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await User.findByPk(decoded.id);
-        if (!user || user.status === 'blocked') return res.status(401).json({ error: 'User is blocked' });
+        if (!user || user.status === 'blocked') return res.status(401).json({ error: 'Unauthorize attempt' });
         req.user = user;
         next();
     } catch (err) {

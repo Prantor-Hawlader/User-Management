@@ -1,13 +1,26 @@
 import { useEffect, useState } from "react";
-
 import { useAuth } from "../context/AuthContext";
 import dataFetch from "../api/axios";
+import {
+  MDBTable,
+  MDBTableHead,
+  MDBTableBody,
+  MDBBadge,
+  MDBBtn,
+  MDBCheckbox,
+  MDBCard,
+  MDBCardHeader,
+  MDBCardBody,
+  MDBCardTitle,
+} from "mdb-react-ui-kit";
+import { formatDate } from "../utils/date";
 
 export default function Dashboard() {
-  const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const { currentUser, logout } = useAuth();
-  console.log("currentUser", currentUser);
+  const [isCheckAll, setIsCheckAll] = useState(false);
+  const [isCheck, setIsCheck] = useState([]);
+
   useEffect(() => {
     const fetchUsersData = async () => {
       const token = localStorage.getItem("token");
@@ -24,7 +37,6 @@ export default function Dashboard() {
   }, [currentUser]);
 
   const handleBlock = async () => {
-    setLoading(true);
     const selectedUsers = users
       .filter((user) => user.selected)
       .map((user) => user.id);
@@ -36,15 +48,19 @@ export default function Dashboard() {
           headers: { Authorization: localStorage.getItem("token") },
         }
       );
-      window.location.reload();
+      setUsers(
+        users.map((user) =>
+          selectedUsers.includes(user.id)
+            ? { ...user, status: "blocked" }
+            : user
+        )
+      );
     } catch (error) {
       console.log("Failed to block users:", error);
-    } finally {
-      setLoading(false);
     }
   };
+
   const handleUnblock = async () => {
-    setLoading(true);
     const selectedUsers = users
       .filter((user) => user.selected)
       .map((user) => user.id);
@@ -56,16 +72,17 @@ export default function Dashboard() {
           headers: { Authorization: localStorage.getItem("token") },
         }
       );
-      window.location.reload();
+      setUsers(
+        users.map((user) =>
+          selectedUsers.includes(user.id) ? { ...user, status: "active" } : user
+        )
+      );
     } catch (error) {
       console.log("Failed to unblock users:", error);
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleDelete = async () => {
-    setLoading(true);
     const selectedUsers = users
       .filter((user) => user.selected)
       .map((user) => user.id);
@@ -78,76 +95,124 @@ export default function Dashboard() {
       setUsers(users.filter((user) => !user.selected));
     } catch (error) {
       console.log("Failed to delete users:", error);
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const handleSelectAll = () => {
+    setIsCheckAll(!isCheckAll);
+    setIsCheck(
+      users.map((li) => {
+        li.id.toString();
+      })
+    );
+    setUsers(
+      users.map((user) => ({
+        ...user,
+        selected: !isCheckAll,
+      }))
+    );
+    if (isCheckAll) {
+      setIsCheck([]);
+    }
+  };
+
+  const handleClick = (e) => {
+    const { id, checked } = e.target;
+    console.log("id:", id, checked);
+    setIsCheck([...isCheck, id]);
+    setUsers(
+      users.map((user) =>
+        user.id.toString() === id ? { ...user, selected: checked } : user
+      )
+    );
+    if (!checked) {
+      setIsCheck(isCheck.filter((item) => item !== id));
     }
   };
 
   return (
-    <div className="container mt-5">
-      <h2 className="text-center">User Management</h2>
-      <p>Email : {currentUser.email}</p>
+    <div className="mx-5 mt-2">
+      <MDBCard background="dark" className="text-white w-25 ms-auto">
+        <MDBCardHeader align="center" className="text-info fw-bold">
+          User Info
+        </MDBCardHeader>
+        <MDBCardBody>
+          <MDBCardTitle>Name : {currentUser.name}</MDBCardTitle>
+          <MDBCardTitle>Email : {currentUser.email}</MDBCardTitle>
+        </MDBCardBody>
+      </MDBCard>
 
-      <button
-        className="btn btn-danger"
-        onClick={handleBlock}
-        disabled={loading}
-      >
-        {loading ? "Blocking" : "Block"}
-      </button>
-      <button
-        className="btn btn-secondary"
-        onClick={handleUnblock}
-        disabled={loading}
-      >
-        {loading ? "Unblocking" : "Unblock"}
-      </button>
-      <button
-        className="btn btn-danger"
-        onClick={handleDelete}
-        disabled={loading}
-      >
-        {loading ? "Deleting" : "Delete"}
-      </button>
-      <table className="table table-striped mt-3">
-        <thead>
+      <div className="d-flex">
+        <MDBBtn color="warning" onClick={handleBlock}>
+          Block
+        </MDBBtn>
+        <MDBBtn color="success" onClick={handleUnblock} className="mx-2">
+          Unblock
+        </MDBBtn>
+        <MDBBtn color="danger" onClick={handleDelete}>
+          Delete
+        </MDBBtn>
+      </div>
+      <MDBTable align="middle" className="mt-2 bg-white">
+        <MDBTableHead color="" className="bg-info">
           <tr>
             <th>
-              <input type="checkbox" />
+              <MDBCheckbox
+                id="selectAll"
+                onChange={handleSelectAll}
+                checked={isCheckAll}
+              />
             </th>
             <th>ID</th>
             <th>Name</th>
             <th>Email</th>
-            <th>Last Login</th>
-            <th>Registration Time</th>
+            <th>Last login</th>
+            <th>Registration time</th>
             <th>Status</th>
           </tr>
-        </thead>
-        <tbody>
+        </MDBTableHead>
+        <MDBTableBody className="table-dark">
           {users.map((user) => (
             <tr key={user.id}>
               <td>
-                <input
-                  type="checkbox"
-                  onChange={() => {
-                    user.selected = !user.selected;
-                    setUsers([...users]);
+                <MDBCheckbox
+                  id={user.id.toString()}
+                  checked={user.selected || false}
+                  onChange={(e) => {
+                    handleClick(e);
                   }}
                 />
               </td>
               <td>{user.id}</td>
-              <td>{user.name}</td>
-              <td>{user.email}</td>
-              <td>{user.lastLogin}</td>
-              <td>{user.registrationTime}</td>
-              <td>{user.status}</td>
+              <td>
+                <p className="fw-bold mb-1">{user.name}</p>
+              </td>
+              <td>
+                <p className="fw-normal mb-1">{user.email}</p>
+              </td>
+              <td>
+                <p className="fw-normal mb-1">{formatDate(user.lastLogin)}</p>
+              </td>
+              <td>{formatDate(user.registrationTime)}</td>
+              <td>
+                <MDBBadge
+                  color={user.status === "blocked" ? "warning" : "success"}
+                  pill
+                >
+                  {user.status}
+                </MDBBadge>
+              </td>
             </tr>
           ))}
-        </tbody>
-      </table>
-      <button onClick={logout} className="btn btn-secondary mt-3">
+        </MDBTableBody>
+      </MDBTable>
+      <MDBBtn
+        color="muted"
+        onClick={logout}
+        className="mt-1 fw-bold border border-info text-white"
+      >
         Logout
-      </button>
+      </MDBBtn>
     </div>
   );
 }

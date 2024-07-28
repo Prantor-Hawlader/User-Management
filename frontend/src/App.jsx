@@ -5,26 +5,31 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 import Dashboard from "./components/Dashboard";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import "mdb-react-ui-kit/dist/css/mdb.min.css";
+import "./App.css";
 function App() {
   return (
-    <Router>
-      <AuthProvider>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+    <div className="vh-100 p-3 custom-bg">
+      <div className="overlay">
+        <Router>
+          <AuthProvider>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
 
-          <Route
-            path="/"
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          />
-        </Routes>
-      </AuthProvider>
-    </Router>
+              <Route
+                path="/"
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              />
+            </Routes>
+          </AuthProvider>
+        </Router>
+      </div>
+    </div>
   );
 }
 

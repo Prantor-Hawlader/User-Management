@@ -17,21 +17,34 @@ export function useAuth() {
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const signup = async (name, email, password) => {
-    const response = await dataFetch.post("/auth/register", {
-      name,
-      email,
-      password,
-    });
-    setCurrentUser(response.data);
+    try {
+      const response = await dataFetch.post("/auth/register", {
+        name,
+        email,
+        password,
+      });
+      setCurrentUser(response.data);
+      setError(null);
+      navigate("/login");
+    } catch (err) {
+      setError(err.response?.data?.error || "Account creation has been failed");
+    }
   };
 
   const login = async (email, password) => {
-    const response = await dataFetch.post("/auth/login", { email, password });
-    setCurrentUser(response.data);
-    localStorage.setItem("token", response.data.token);
+    try {
+      const response = await dataFetch.post("/auth/login", { email, password });
+      setCurrentUser(response.data);
+      localStorage.setItem("token", response.data.token);
+      setError(null);
+      navigate("/");
+    } catch (err) {
+      setError(err.response?.data?.error || "Login failed");
+    }
   };
 
   const logout = useCallback(() => {
@@ -51,7 +64,7 @@ export function AuthProvider({ children }) {
           });
           setCurrentUser(response.data);
         } catch (error) {
-          console.log("Logout by error", error);
+          console.log("Intentionally logout", error);
           logout();
         }
       }
@@ -66,6 +79,7 @@ export function AuthProvider({ children }) {
     login,
     signup,
     logout,
+    error,
   };
 
   return (
