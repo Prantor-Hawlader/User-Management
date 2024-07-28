@@ -198,7 +198,7 @@ export default function Dashboard() {
       <MDBBtn
         color="muted"
         onClick={logout}
-        className="mt-1 fw-bold border border-info text-white"
+        className="my-2 fw-bold border border-info text-white"
       >
         Logout
       </MDBBtn>

@@ -9,7 +9,7 @@ import "mdb-react-ui-kit/dist/css/mdb.min.css";
 import "./App.css";
 function App() {
   return (
-    <div className="vh-100 p-3 custom-bg">
+    <div className="vh-100 p-3 custom-bg overflow-auto">
       <div className="overlay">
         <Router>
           <AuthProvider>
